@@ -200,7 +200,7 @@ class Chat(UserControl):
         # Inicializando o chat historico aqui
         self.set_chat_history()
 
-        self.star_listening()
+        self.start_listening()
 
         super().__init__()
 
@@ -380,7 +380,7 @@ class Chat(UserControl):
             pass
         self.count +=1
 
-    def star_listening(self):
+    def start_listening(self):
         # o que acontece aqui é que o firebase nos permite ouvir as alterações em um nó específico em tempo real db
         # estamos ouvindo conversas no nó da mensagem
         # se novos dados aparecerem, podemos lidar com esses dados usando o manipulador de stream
