@@ -307,17 +307,20 @@ class Chat(UserControl):
                 for key in sorted_keys:
                     # Value e agora um dicionario objeto com dados por anotação
                     value = db.child("message").child(key).get().val()
-                    # Nos precisamo converter o timestamp ára um valor legibel
+                    # Nos precisamo converter o timestamp ára um valor legivel
+                    #for item in value: print(item["email"])
+                    #print("aqui")
+                    #print(value[0]["uuid"])
+                    time = datetime.datetime.fromtimestamp(value[0]["timestamp"]/ 1000.0).strftime("%H:%M")
+                    print(time)
 
-                    time = datetime.datetime.fromtimestamp(value["timestamp"]/ 1000.0).strftime("%H:%M")
-                    print("aqui")
                     # Próxima verificação the uif se o user ou algo
-                    if value["uuid"] == self.user_id:
+                    if value[0]["uuid"] == self.user_id:
                         items.append(
                             self.chat_message_ui(
                                 time,
-                                value["email"],
-                                value["message"],
+                                value[0]["email"],
+                                value[0]["message"],
                                 CrossAxisAlignment.END,
                                 MainAxisAlignment.END,
                                 "teal100"
@@ -327,8 +330,8 @@ class Chat(UserControl):
                         items.append(
                             self.chat_message_ui(
                                 time,
-                                value["email"],
-                                value["message"],
+                                value[0]["email"],
+                                value[0]["message"],
                                 CrossAxisAlignment.START,
                                 MainAxisAlignment.START,
                                 "blue100"
