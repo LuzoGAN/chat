@@ -312,7 +312,7 @@ class Chat(UserControl):
                     #print("aqui")
                     #print(value[0]["uuid"])
                     time = datetime.datetime.fromtimestamp(value[0]["timestamp"]/ 1000.0).strftime("%H:%M")
-                    print(time)
+                    #print(time)
 
                     # Próxima verificação the uif se o user ou algo
                     if value[0]["uuid"] == self.user_id:
@@ -350,14 +350,14 @@ class Chat(UserControl):
         # todo o banco de dados quando ele é iniciado, por algum motivo, então faço isso para evitar erros
         if self.count > 0:
             # Próxima verificação the uif se o user ou algo
-            time = datetime.datetime.fromtimestamp(value['data']["timestamp"] / 1000.0).strftime("%H:%M")
+            time = datetime.datetime.fromtimestamp(value['data'][0]["timestamp"] / 1000.0).strftime("%H:%M")
 
-            if value['data']["uuid"] == self.user_id:
+            if value['data'][0]["uuid"] == self.user_id:
                 self.chat_arena.controls.append(
                     self.chat_message_ui(
                         time,
-                        value['data']["email"],
-                        value['data']["message"],
+                        value['data'][0]["email"],
+                        value['data'][0]["message"],
                         CrossAxisAlignment.END,
                         MainAxisAlignment.END,
                         "teal100"
@@ -367,8 +367,8 @@ class Chat(UserControl):
                 self.chat_arena.controls.append(
                     self.chat_message_ui(
                         time,
-                        value['data']["email"],
-                        value['data']["message"],
+                        value['data'][0]["email"],
+                        value['data'][0]["message"],
                         CrossAxisAlignment.START,
                         MainAxisAlignment.START,
                         "blue100"
