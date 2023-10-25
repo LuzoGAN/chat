@@ -9,7 +9,9 @@ from firebase_config import initialize_firebase
 auth, db = initialize_firebase()
 
 # Inicializando a autenticação, e trabalhando no caminho para aplicação
+
 class Authentication(UserControl):
+
     def __init__(self):
         # crirando a instancia para o front
         self.auth_box = Container(
@@ -198,6 +200,8 @@ class Chat(UserControl):
         # Inicializando o chat historico aqui
         self.set_chat_history()
 
+        self.star_listening()
+
         super().__init__()
 
     def open_chat_box(self):
@@ -304,18 +308,16 @@ class Chat(UserControl):
                     # Value e agora um dicionario objeto com dados por anotação
                     value = db.child("message").child(key).get().val()
                     # Nos precisamo converter o timestamp ára um valor legibel
-                    time = datetime.datetime.fromtimestamp(
-                        value["timestamp"] / 1000.0
-                    ).strftime("%H:%M")
 
-
+                    time = datetime.datetime.fromtimestamp(value["timestamp"]/ 1000.0).strftime("%H:%M")
+                    print("aqui")
                     # Próxima verificação the uif se o user ou algo
-                    if value['uuid'] == self.user_id:
+                    if value["uuid"] == self.user_id:
                         items.append(
                             self.chat_message_ui(
                                 time,
-                                value['email'],
-                                value['message'],
+                                value["email"],
+                                value["message"],
                                 CrossAxisAlignment.END,
                                 MainAxisAlignment.END,
                                 "teal100"
@@ -325,8 +327,8 @@ class Chat(UserControl):
                         items.append(
                             self.chat_message_ui(
                                 time,
-                                value['email'],
-                                value['message'],
+                                value["email"],
+                                value["message"],
                                 CrossAxisAlignment.START,
                                 MainAxisAlignment.START,
                                 "blue100"
@@ -334,10 +336,52 @@ class Chat(UserControl):
                         )
                 # Finalmente adicionando ao main a area do chat
                 self.chat_arena.controls = items
+                #self.chat_arena.update()
             else:
                 pass
         except Exception as e:
             print(e)
+
+    def stream_handler(self, value):
+        # configuramos uma contagem porque imprime
+        # todo o banco de dados quando ele é iniciado, por algum motivo, então faço isso para evitar erros
+        if self.count > 0:
+            # Próxima verificação the uif se o user ou algo
+            time = datetime.datetime.fromtimestamp(value['data']["timestamp"] / 1000.0).strftime("%H:%M")
+
+            if value['data']["uuid"] == self.user_id:
+                self.chat_arena.controls.append(
+                    self.chat_message_ui(
+                        time,
+                        value['data']["email"],
+                        value['data']["message"],
+                        CrossAxisAlignment.END,
+                        MainAxisAlignment.END,
+                        "teal100"
+                    ),
+                )
+            else:
+                self.chat_arena.controls.append(
+                    self.chat_message_ui(
+                        time,
+                        value['data']["email"],
+                        value['data']["message"],
+                        CrossAxisAlignment.START,
+                        MainAxisAlignment.START,
+                        "blue100"
+                    ),
+                )
+                self.chat_arena.update()
+
+        else:
+            pass
+        self.count +=1
+
+    def star_listening(self):
+        # o que acontece aqui é que o firebase nos permite ouvir as alterações em um nó específico em tempo real db
+        # estamos ouvindo conversas no nó da mensagem
+        # se novos dados aparecerem, podemos lidar com esses dados usando o manipulador de stream
+        self.stream = db.child("message").stream(self.stream_handler)
 
 
     def build(self):
@@ -350,7 +394,7 @@ class Chat(UserControl):
                     height=480,
                     bgcolor='lightblue',
                     border=border.only(
-                        bottom=border.BorderSide(0.5, 'black'),
+                        bottom=border.BorderSide(0.25, 'black'),
                     ),
                     content=self.chat_arena,
                 ),
@@ -358,9 +402,9 @@ class Chat(UserControl):
                     alignment=MainAxisAlignment.CENTER,
                     vertical_alignment=CrossAxisAlignment.CENTER,
                     controls=[self.chat_input, self.chat_send_button]
-                )
-                                      ]
-                            )
+                ),
+            ],
+        )
         self.chat_box.content = chat_colum
 
         return self.chat_box
@@ -373,7 +417,7 @@ def main(page : Page):
 
     # Init Classes
     auth = Authentication()
-    chat = Chat('P5O7lfkDgTfSaZKd0bV0QzzDdid2', 'luzoaki2@gmail.com')
+    chat = Chat('wfHc0wgPLKd0M6zC9ZuBVbBPKna2', 'luzoaki@gmail.com')
 
     # Set Page
     page.add(chat)
